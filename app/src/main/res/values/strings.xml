@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Blur</string>
     <string name="action_settings">Settings</string>
+    <string name="blur_btn_text">Blur</string>
+    <string name="shape_blur_btn_text">Shape Blur</string>
+    <string name="tutorial_btn_text">Tutorial</string>
 </resources>

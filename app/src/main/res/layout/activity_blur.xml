@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainLayOut"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="top|bottom|center_vertical|fill_vertical|center|fill"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="UNKNOWN_DATA_0x3201"
+        android:background="#a0191919"
+        android:gravity="top|bottom|left|right|center_vertical|fill_vertical|center_horizontal|fill_horizontal|center|fill|start|end"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/newBtn"
+            android:layout_width="UNKNOWN_DATA_0x3201"
+            android:layout_height="match_parent"
+            android:background="@drawable/nav_button"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/newimage" />
+
+        <ImageButton
+            android:id="@+id/resetBtn"
+            android:layout_width="UNKNOWN_DATA_0x3201"
+            android:layout_height="match_parent"
+            android:background="@drawable/nav_button"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/reset" />
+
+        <ImageButton
+            android:id="@+id/undoBtn"
+            android:layout_width="UNKNOWN_DATA_0x3201"
+            android:layout_height="match_parent"
+            android:background="@drawable/nav_button"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/undo_selector" />
+
+        <ImageButton
+            android:id="@+id/fitBtn"
+            android:layout_width="UNKNOWN_DATA_0x3201"
+            android:layout_height="match_parent"
+            android:background="@drawable/nav_button"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/fit" />
+
+        <ImageButton
+            android:id="@+id/shareBtn"
+            android:layout_width="UNKNOWN_DATA_0x3201"
+            android:layout_height="match_parent"
+            android:background="@drawable/nav_button"
+            android:contentDescription="save"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/show_tutorial"
+            android:visibility="gone" />
+
+        <ImageButton
+            android:id="@+id/offsetBtn"
+            android:layout_width="UNKNOWN_DATA_0x3201"
+            android:layout_height="match_parent"
+            android:background="@drawable/nav_button"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/offset" />
+
+        <ImageButton
+            android:id="@+id/saveBtn"
+            android:layout_width="UNKNOWN_DATA_0x3201"
+            android:layout_height="match_parent"
+            android:background="@drawable/nav_button"
+            android:contentDescription="save"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/save" />
+    </LinearLayout>
+</LinearLayout>
