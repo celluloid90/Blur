@@ -23,24 +23,21 @@ import android.graphics.Region.Op;
 import android.graphics.Shader.TileMode;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.ScaleGestureDetector.SimpleOnScaleGestureListener;
 import android.view.View;
-import android.view.View.MeasureSpec;
-import android.view.View.OnTouchListener;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.TranslateAnimation;
-import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.RelativeLayout.LayoutParams;
-import com.facebook.share.internal.ShareConstants;
+
 import java.io.File;
 import java.io.FileOutputStream;
 
-public class TouchImageView extends ImageView {
+public class TouchImageView extends AppCompatImageView {
     static final int CLICK = 3;
     static final int DRAG = 1;
     static final int NONE = 0;
@@ -101,14 +98,15 @@ public class TouchImageView extends ImageView {
 
         public void onAnimationEnd(Animation animation) {
             if (TouchImageView.this.prViewDefaultPosition) {
-                LayoutParams lp = new LayoutParams(MainActivity.prView.getWidth(), MainActivity.prView.getHeight());
+                LayoutParams lp = new LayoutParams(BlurActivity.prView.getWidth(), BlurActivity.prView.getHeight());
                 lp.setMargins(TouchImageView.NONE, TouchImageView.NONE, TouchImageView.NONE, TouchImageView.NONE);
-                MainActivity.prView.setLayoutParams(lp);
+                BlurActivity.prView.setLayoutParams(lp);
                 return;
+            } else {
+                LayoutParams lp = new LayoutParams(BlurActivity.prView.getWidth(), BlurActivity.prView.getHeight());
+                lp.setMargins(TouchImageView.NONE, TouchImageView.this.viewHeight - BlurActivity.prView.getWidth(), TouchImageView.NONE, TouchImageView.NONE);
+                BlurActivity.prView.setLayoutParams(lp);
             }
-            lp = new LayoutParams(MainActivity.prView.getWidth(), MainActivity.prView.getHeight());
-            lp.setMargins(TouchImageView.NONE, TouchImageView.this.viewHeight - MainActivity.prView.getWidth(), TouchImageView.NONE, TouchImageView.NONE);
-            MainActivity.prView.setLayoutParams(lp);
         }
 
         public void onAnimationRepeat(Animation animation) {
@@ -129,7 +127,7 @@ public class TouchImageView extends ImageView {
         protected String doInBackground(String... params) {
             TouchImageView touchImageView = TouchImageView.this;
             touchImageView.currentImageIndex += TouchImageView.DRAG;
-            File file = new File(MainActivity.tempDrawPathFile, "canvasLog" + TouchImageView.this.currentImageIndex + ".jpg");
+            File file = new File(BlurActivity.tempDrawPathFile, "canvasLog" + TouchImageView.this.currentImageIndex + ".jpg");
             if (file.exists()) {
                 file.delete();
             }
@@ -142,7 +140,7 @@ public class TouchImageView extends ImageView {
                 e.printStackTrace();
             }
             if (TouchImageView.this.currentImageIndex > 5) {
-                File file2 = new File(MainActivity.tempDrawPathFile, "canvasLog" + (TouchImageView.this.currentImageIndex - 5) + ".jpg");
+                File file2 = new File(BlurActivity.tempDrawPathFile, "canvasLog" + (TouchImageView.this.currentImageIndex - 5) + ".jpg");
                 if (file2.exists()) {
                     file2.delete();
                 }
@@ -164,7 +162,7 @@ public class TouchImageView extends ImageView {
         }
 
         public boolean onScaleBegin(ScaleGestureDetector detector) {
-            MainActivity.prView.setVisibility(4);
+            BlurActivity.prView.setVisibility(View.INVISIBLE);
             if (TouchImageView.this.mode == TouchImageView.DRAG || TouchImageView.this.mode == TouchImageView.ZOOMDRAG) {
                 TouchImageView.this.mode = TouchImageView.ZOOMDRAG;
             } else {
@@ -194,8 +192,8 @@ public class TouchImageView extends ImageView {
         }
 
         public void onScaleEnd(ScaleGestureDetector detector) {
-            TouchImageView.this.radius = ((float) (MainActivity.radiusBar.getProgress() + 50)) / TouchImageView.this.saveScale;
-            MainActivity.brushView.setShapeRadiusRatio(((float) (MainActivity.radiusBar.getProgress() + 50)) / TouchImageView.this.saveScale);
+            TouchImageView.this.radius = ((float) (BlurActivity.radiusBar.getProgress() + 50)) / TouchImageView.this.saveScale;
+            BlurActivity.brushView.setShapeRadiusRatio(((float) (BlurActivity.radiusBar.getProgress() + 50)) / TouchImageView.this.saveScale);
             TouchImageView.this.updatePreviewPaint();
         }
     }
@@ -217,8 +215,8 @@ public class TouchImageView extends ImageView {
     }
 
     void initDrawing() {
-        this.splashBitmap = MainActivity.bitmapClear.copy(Config.ARGB_8888, true);
-        this.drawingBitmap = Bitmap.createBitmap(MainActivity.bitmapBlur).copy(Config.ARGB_8888, true);
+        this.splashBitmap = BlurActivity.bitmapClear.copy(Config.ARGB_8888, true);
+        this.drawingBitmap = Bitmap.createBitmap(BlurActivity.bitmapBlur).copy(Config.ARGB_8888, true);
         setImageBitmap(this.drawingBitmap);
         this.canvas = new Canvas(this.drawingBitmap);
         this.circlePath = new Path();
@@ -243,7 +241,7 @@ public class TouchImageView extends ImageView {
         this.canvasPreview = new Canvas(this.tempPreviewBitmap);
         this.dstRect = new Rect(NONE, NONE, 100, 100);
         this.logPaintGray = new Paint(this.drawPaint);
-        this.logPaintGray.setShader(new BitmapShader(MainActivity.bitmapBlur, TileMode.CLAMP, TileMode.CLAMP));
+        this.logPaintGray.setShader(new BitmapShader(BlurActivity.bitmapBlur, TileMode.CLAMP, TileMode.CLAMP));
         this.bitmapShader = new BitmapShader(this.splashBitmap, TileMode.CLAMP, TileMode.CLAMP);
         this.drawPaint.setShader(this.bitmapShader);
         this.logPaintColor = new Paint(this.drawPaint);
@@ -269,11 +267,11 @@ public class TouchImageView extends ImageView {
     }
 
     void updatePreviewPaint() {
-        if (MainActivity.bitmapClear.getWidth() > MainActivity.bitmapClear.getHeight()) {
-            resRatio = ((float) MainActivity.displayWidth) / ((float) MainActivity.bitmapClear.getWidth());
+        if (BlurActivity.bitmapClear.getWidth() > BlurActivity.bitmapClear.getHeight()) {
+            resRatio = ((float) BlurActivity.displayWidth) / ((float) BlurActivity.bitmapClear.getWidth());
             resRatio *= this.saveScale;
         } else {
-            resRatio = this.origHeight / ((float) MainActivity.bitmapClear.getHeight());
+            resRatio = this.origHeight / ((float) BlurActivity.bitmapClear.getHeight());
             resRatio *= this.saveScale;
         }
         this.drawPaint.setStrokeWidth(this.radius * resRatio);
@@ -292,7 +290,7 @@ public class TouchImageView extends ImageView {
             public boolean onTouch(View v, MotionEvent event) {
                 TouchImageView.this.mScaleDetector.onTouchEvent(event);
                 TouchImageView.this.pCount2 = event.getPointerCount();
-                TouchImageView.this.curr = new PointF(event.getX(), event.getY() - (((float) MainActivity.offsetBar.getProgress()) * 3.0f));
+                TouchImageView.this.curr = new PointF(event.getX(), event.getY() - (((float) BlurActivity.offsetBar.getProgress()) * 3.0f));
                 TouchImageView.this.x = (TouchImageView.this.curr.x - TouchImageView.this.m[TouchImageView.ZOOM]) / TouchImageView.this.m[TouchImageView.NONE];
                 TouchImageView.this.y = (TouchImageView.this.curr.y - TouchImageView.this.m[5]) / TouchImageView.this.m[4];
                 switch (event.getAction()) {
@@ -306,7 +304,7 @@ public class TouchImageView extends ImageView {
                         TouchImageView.this.start.set(TouchImageView.this.last);
                         if (!(TouchImageView.this.mode == TouchImageView.DRAG || TouchImageView.this.mode == TouchImageView.ZOOMDRAG)) {
                             TouchImageView.this.draw = true;
-                            MainActivity.prView.setVisibility(TouchImageView.NONE);
+                            BlurActivity.prView.setVisibility(TouchImageView.NONE);
                         }
                         TouchImageView.this.circlePath.reset();
                         TouchImageView.this.circlePath.moveTo(TouchImageView.this.curr.x, TouchImageView.this.curr.y);
@@ -330,7 +328,7 @@ public class TouchImageView extends ImageView {
                             TouchImageView.this.canvas.drawPath(TouchImageView.this.drawPath, TouchImageView.this.drawPaint);
                             new SaveCanvasLog().execute(new String[TouchImageView.NONE]);
                         }
-                        MainActivity.prView.setVisibility(4);
+                        BlurActivity.prView.setVisibility(View.INVISIBLE);
                         TouchImageView.this.circlePath.reset();
                         TouchImageView.this.drawPath.reset();
                         TouchImageView.this.brushPath.reset();
@@ -345,25 +343,25 @@ public class TouchImageView extends ImageView {
                                 TouchImageView.this.drawPath.lineTo(TouchImageView.this.x, TouchImageView.this.y);
                                 TouchImageView.this.brushPath.lineTo(TouchImageView.this.curr.x, TouchImageView.this.curr.y);
                                 TouchImageView.this.showBoxPreview();
-                                int prvSize = (int) (((double) MainActivity.prView.getWidth()) * 1.3d);
+                                int prvSize = (int) (((double) BlurActivity.prView.getWidth()) * 1.3d);
                                 TranslateAnimation animation;
                                 if (TouchImageView.this.curr.x > ((float) prvSize) || TouchImageView.this.curr.y > ((float) prvSize) || !TouchImageView.this.prViewDefaultPosition) {
                                     if (TouchImageView.this.curr.x <= ((float) prvSize) && TouchImageView.this.curr.y >= ((float) (TouchImageView.this.viewHeight - prvSize)) && !TouchImageView.this.prViewDefaultPosition) {
                                         TouchImageView.this.prViewDefaultPosition = true;
-                                        animation = new TranslateAnimation(0.0f, 0.0f, 0.0f, (float) (-(TouchImageView.this.viewHeight - MainActivity.prView.getWidth())));
+                                        animation = new TranslateAnimation(0.0f, 0.0f, 0.0f, (float) (-(TouchImageView.this.viewHeight - BlurActivity.prView.getWidth())));
                                         animation.setDuration(500);
                                         animation.setFillAfter(false);
                                         animation.setAnimationListener(new MyAnimationListener());
-                                        MainActivity.prView.startAnimation(animation);
+                                        BlurActivity.prView.startAnimation(animation);
                                         break;
                                     }
                                 }
                                 TouchImageView.this.prViewDefaultPosition = false;
-                                animation = new TranslateAnimation(0.0f, 0.0f, 0.0f, (float) (TouchImageView.this.viewHeight - MainActivity.prView.getWidth()));
+                                animation = new TranslateAnimation(0.0f, 0.0f, 0.0f, (float) (TouchImageView.this.viewHeight - BlurActivity.prView.getWidth()));
                                 animation.setDuration(500);
                                 animation.setFillAfter(false);
                                 animation.setAnimationListener(new MyAnimationListener());
-                                MainActivity.prView.startAnimation(animation);
+                                BlurActivity.prView.startAnimation(animation);
                                 break;
                             }
                         }
@@ -371,13 +369,6 @@ public class TouchImageView extends ImageView {
                             TouchImageView.this.matrix.postTranslate(TouchImageView.this.curr.x - TouchImageView.this.last.x, TouchImageView.this.curr.y - TouchImageView.this.last.y);
                         }
                         TouchImageView.this.last.set(TouchImageView.this.curr.x, TouchImageView.this.curr.y);
-                        break;
-                        break;
-                    case ShareConstants.MAXIMUM_PHOTO_COUNT /*6*/:
-                        if (TouchImageView.this.mode == TouchImageView.ZOOM) {
-                            TouchImageView.this.mode = TouchImageView.NONE;
-                            break;
-                        }
                         break;
                 }
                 TouchImageView.this.pCount1 = TouchImageView.this.pCount2;
@@ -397,7 +388,7 @@ public class TouchImageView extends ImageView {
         Bitmap cacheBit = Bitmap.createBitmap(getDrawingCache());
         this.canvasPreview.drawRect(this.dstRect, this.tempPaint);
         this.canvasPreview.drawBitmap(cacheBit, new Rect(((int) this.curr.x) - 100, ((int) this.curr.y) - 100, ((int) this.curr.x) + 100, ((int) this.curr.y) + 100), this.dstRect, this.previewPaint);
-        MainActivity.prView.setImageBitmap(this.tempPreviewBitmap);
+        BlurActivity.prView.setImageBitmap(this.tempPreviewBitmap);
         destroyDrawingCache();
     }
 

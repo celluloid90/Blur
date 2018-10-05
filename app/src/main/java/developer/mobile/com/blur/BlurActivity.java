@@ -1,13 +1,8 @@
 package developer.mobile.com.blur;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
@@ -19,51 +14,42 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.media.MediaScannerConnection;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Display;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+
 import java.io.File;
 import java.io.FileOutputStream;
-import java.lang.reflect.Array;
 import java.util.List;
 
-public class BlurActivity extends Activity implements OnClickListener, OnSeekBarChangeListener {
+public class BlurActivity extends AppCompatActivity implements OnClickListener, OnSeekBarChangeListener {
     static Bitmap bitmapBlur;
     static Bitmap bitmapClear;
     static SeekBar blurrinessBar;
@@ -78,7 +64,6 @@ public class BlurActivity extends Activity implements OnClickListener, OnSeekBar
     static TouchImageView tiv;
     private int REQUEST_CAMERA = 0;
     private int SELECT_FILE = 1;
-    final Activity activity = this;
     TextView blurText;
     LinearLayout blurView;
     int btnbgColor = 1644825;
@@ -107,9 +92,6 @@ public class BlurActivity extends Activity implements OnClickListener, OnSeekBar
     ImageButton grayBtn;
     Bitmap hand;
     String imageSavePath = (Environment.getExternalStorageDirectory().getPath() + "/DSLR Blur");
-    RelativeLayout lv_adview;
-    RelativeLayout lv_xads;
-    private AdView mAdView;
     ImageButton mButtonXads;
     Animation mShakeAnimationXads;
     ImageButton newBtn;
@@ -169,57 +151,14 @@ public class BlurActivity extends Activity implements OnClickListener, OnSeekBar
         }
     }
 
-    class CustomDialog extends Dialog {
-        Context ctx;
-
-        public CustomDialog(Context context) {
-            super(context);
-            this.ctx = context;
-        }
-
-        public CustomDialog(Context context, int themeResId) {
-            super(context, themeResId);
-            this.ctx = context;
-        }
-
-        protected CustomDialog(Context context, boolean cancelable, OnCancelListener cancelListener) {
-            super(context, cancelable, cancelListener);
-            this.ctx = context;
-        }
-
-        public void show() {
-            requestWindowFeature(1);
-            View popupView = LayoutInflater.from(this.ctx).inflate(R.layout.popup_tip, null);
-            setCanceledOnTouchOutside(false);
-            setCancelable(false);
-            super.setContentView(popupView);
-            final CheckBox dontShow = (CheckBox) popupView.findViewById(R.id.dont_show);
-            ((Button) popupView.findViewById(R.id.dismiss)).setOnClickListener(new OnClickListener() {
-                public void onClick(View v) {
-                    if (dontShow.isChecked()) {
-                        PreferenceManager.getDefaultSharedPreferences(BlurActivity.this).edit().putString("show", "no").commit();
-                    } else {
-                        PreferenceManager.getDefaultSharedPreferences(BlurActivity.this).edit().putString("show", "yes").commit();
-                    }
-                    super.dismiss();
-                }
-            });
-            super.show();
-        }
-    }
-
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LandingActivity.showAdmobInterstitial();
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         displayWidth = size.x;
         displayHight = size.y;
         setContentView(R.layout.activity_blur);
-        this.mButtonXads = (ImageButton) findViewById(R.id.btn_remove_banner);
-        this.mButtonXads.setOnClickListener(this);
-        this.mShakeAnimationXads = AnimationUtils.loadAnimation(this, R.anim.shake_xads);
         this.hand = BitmapFactory.decodeResource(getResources(), R.drawable.hand);
         this.hand = Bitmap.createScaledBitmap(this.hand, 120, 120, true);
         this.blurView = (LinearLayout) findViewById(R.id.blur_view);
@@ -228,13 +167,8 @@ public class BlurActivity extends Activity implements OnClickListener, OnSeekBar
         prView = (ImageView) findViewById(R.id.preview);
         this.offsetDemo = (ImageView) findViewById(R.id.offsetDemo);
         this.offsetLayout = (LinearLayout) findViewById(R.id.offsetLayout);
-        this.progressBar = (ProgressBar) findViewById(R.id.progressBar);
         bitmapClear = BitmapFactory.decodeResource(getResources(), R.drawable.me);
         bitmapBlur = blur(this, bitmapClear, tiv.opacity);
-        this.bp = new BillingProcessor(this, LandingActivity.LICENSE, this);
-        this.bp.initialize();
-        this.lv_adview = (RelativeLayout) findViewById(R.id.lv_adview);
-        this.lv_xads = (RelativeLayout) findViewById(R.id.xads);
         this.newBtn = (ImageButton) findViewById(R.id.newBtn);
         this.resetBtn = (ImageButton) findViewById(R.id.resetBtn);
         this.undoBtn = (ImageButton) findViewById(R.id.undoBtn);
@@ -275,54 +209,12 @@ public class BlurActivity extends Activity implements OnClickListener, OnSeekBar
         if (!imgSaveFolder.exists()) {
             imgSaveFolder.mkdirs();
         }
-        clearTempBitmap();
+//        clearTempBitmap();
         tiv.initDrawing();
-        this.progressBlurring = new ProgressDialog(this);
-        update();
-        if (isNetworkAvailable() && !LandingActivity.noAd) {
-            this.lv_adview.setVisibility(0);
-            this.lv_xads.setVisibility(0);
-            this.mAdView = (AdView) findViewById(R.id.ad_view);
-            this.mAdView.loadAd(new Builder().addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build());
-        }
-        CustomDialog cd = new CustomDialog(this);
-        if (PreferenceManager.getDefaultSharedPreferences(this).getString("show", "yes").equals("yes")) {
-            cd.show();
-        }
-        final Handler handler = new Handler();
-        this.runnableCodeXads = new Runnable() {
-            public void run() {
-                BlurActivity.this.mButtonXads.startAnimation(BlurActivity.this.mShakeAnimationXads);
-                handler.postDelayed(BlurActivity.this.runnableCodeXads, 2000);
-            }
-        };
-        handler.post(this.runnableCodeXads);
-    }
-
-    public void onProductPurchased(@NonNull String productId, @Nullable TransactionDetails details) {
-        update();
-    }
-
-    public void onPurchaseHistoryRestored() {
-        update();
-    }
-
-    public void onBillingError(int errorCode, @Nullable Throwable error) {
-    }
-
-    public void onBillingInitialized() {
     }
 
     public void onDestroy() {
-        if (this.bp != null) {
-            this.bp.release();
-        }
         super.onDestroy();
-    }
-
-    private boolean isNetworkAvailable() {
-        NetworkInfo activeNetworkInfo = ((ConnectivityManager) getSystemService("connectivity")).getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     void clearTempBitmap() {
@@ -357,52 +249,56 @@ public class BlurActivity extends Activity implements OnClickListener, OnSeekBar
 
     public static Bitmap blurify(Bitmap sentBitmap, int radius) {
         Bitmap bitmap = sentBitmap.copy(sentBitmap.getConfig(), true);
+
         if (radius < 1) {
-            return null;
+            return (null);
         }
-        int i;
-        int y;
-        int x;
+
         int w = bitmap.getWidth();
         int h = bitmap.getHeight();
-        int[] pix = new int[(w * h)];
+
+        int[] pix = new int[w * h];
         Log.e("pix", w + " " + h + " " + pix.length);
         bitmap.getPixels(pix, 0, w, 0, 0, w, h);
+
         int wm = w - 1;
         int hm = h - 1;
         int wh = w * h;
-        int div = (radius + radius) + 1;
-        int[] r = new int[wh];
-        int[] g = new int[wh];
-        int[] b = new int[wh];
-        int[] vmin = new int[Math.max(w, h)];
+        int div = radius + radius + 1;
+
+        int r[] = new int[wh];
+        int g[] = new int[wh];
+        int b[] = new int[wh];
+        int rsum, gsum, bsum, x, y, i, p, yp, yi, yw;
+        int vmin[] = new int[Math.max(w, h)];
+
         int divsum = (div + 1) >> 1;
         divsum *= divsum;
-        int[] dv = new int[(divsum * 256)];
-        for (i = 0; i < divsum * 256; i++) {
-            dv[i] = i / divsum;
+        int dv[] = new int[256 * divsum];
+        for (i = 0; i < 256 * divsum; i++) {
+            dv[i] = (i / divsum);
         }
-        int yi = 0;
-        int yw = 0;
-        int[][] stack = (int[][]) Array.newInstance(Integer.TYPE, new int[]{div, 3});
+
+        yw = yi = 0;
+
+        int[][] stack = new int[div][3];
+        int stackpointer;
+        int stackstart;
+        int[] sir;
+        int rbs;
         int r1 = radius + 1;
+        int routsum, goutsum, boutsum;
+        int rinsum, ginsum, binsum;
+
         for (y = 0; y < h; y++) {
-            int bsum = 0;
-            int gsum = 0;
-            int rsum = 0;
-            int boutsum = 0;
-            int goutsum = 0;
-            int routsum = 0;
-            int binsum = 0;
-            int ginsum = 0;
-            int rinsum = 0;
+            rinsum = ginsum = binsum = routsum = goutsum = boutsum = rsum = gsum = bsum = 0;
             for (i = -radius; i <= radius; i++) {
-                int p = pix[Math.min(wm, Math.max(i, 0)) + yi];
-                int[] sir = stack[i + radius];
-                sir[0] = (16711680 & p) >> 16;
-                sir[1] = (65280 & p) >> 8;
-                sir[2] = p & 255;
-                int rbs = r1 - Math.abs(i);
+                p = pix[yi + Math.min(wm, Math.max(i, 0))];
+                sir = stack[i + radius];
+                sir[0] = (p & 0xff0000) >> 16;
+                sir[1] = (p & 0x00ff00) >> 8;
+                sir[2] = (p & 0x0000ff);
+                rbs = r1 - Math.abs(i);
                 rsum += sir[0] * rbs;
                 gsum += sir[1] * rbs;
                 bsum += sir[2] * rbs;
@@ -416,64 +312,75 @@ public class BlurActivity extends Activity implements OnClickListener, OnSeekBar
                     boutsum += sir[2];
                 }
             }
-            int stackpointer = radius;
+            stackpointer = radius;
+
             for (x = 0; x < w; x++) {
+
                 r[yi] = dv[rsum];
                 g[yi] = dv[gsum];
                 b[yi] = dv[bsum];
+
                 rsum -= routsum;
                 gsum -= goutsum;
                 bsum -= boutsum;
-                sir = stack[((stackpointer - radius) + div) % div];
+
+                stackstart = stackpointer - radius + div;
+                sir = stack[stackstart % div];
+
                 routsum -= sir[0];
                 goutsum -= sir[1];
                 boutsum -= sir[2];
+
                 if (y == 0) {
-                    vmin[x] = Math.min((x + radius) + 1, wm);
+                    vmin[x] = Math.min(x + radius + 1, wm);
                 }
-                p = pix[vmin[x] + yw];
-                sir[0] = (16711680 & p) >> 16;
-                sir[1] = (65280 & p) >> 8;
-                sir[2] = p & 255;
+                p = pix[yw + vmin[x]];
+
+                sir[0] = (p & 0xff0000) >> 16;
+                sir[1] = (p & 0x00ff00) >> 8;
+                sir[2] = (p & 0x0000ff);
+
                 rinsum += sir[0];
                 ginsum += sir[1];
                 binsum += sir[2];
+
                 rsum += rinsum;
                 gsum += ginsum;
                 bsum += binsum;
+
                 stackpointer = (stackpointer + 1) % div;
-                sir = stack[stackpointer % div];
+                sir = stack[(stackpointer) % div];
+
                 routsum += sir[0];
                 goutsum += sir[1];
                 boutsum += sir[2];
+
                 rinsum -= sir[0];
                 ginsum -= sir[1];
                 binsum -= sir[2];
+
                 yi++;
             }
             yw += w;
         }
         for (x = 0; x < w; x++) {
-            bsum = 0;
-            gsum = 0;
-            rsum = 0;
-            boutsum = 0;
-            goutsum = 0;
-            routsum = 0;
-            binsum = 0;
-            ginsum = 0;
-            rinsum = 0;
-            int yp = (-radius) * w;
+            rinsum = ginsum = binsum = routsum = goutsum = boutsum = rsum = gsum = bsum = 0;
+            yp = -radius * w;
             for (i = -radius; i <= radius; i++) {
                 yi = Math.max(0, yp) + x;
+
                 sir = stack[i + radius];
+
                 sir[0] = r[yi];
                 sir[1] = g[yi];
                 sir[2] = b[yi];
+
                 rbs = r1 - Math.abs(i);
+
                 rsum += r[yi] * rbs;
                 gsum += g[yi] * rbs;
                 bsum += b[yi] * rbs;
+
                 if (i > 0) {
                     rinsum += sir[0];
                     ginsum += sir[1];
@@ -483,6 +390,7 @@ public class BlurActivity extends Activity implements OnClickListener, OnSeekBar
                     goutsum += sir[1];
                     boutsum += sir[2];
                 }
+
                 if (i < hm) {
                     yp += w;
                 }
@@ -490,41 +398,56 @@ public class BlurActivity extends Activity implements OnClickListener, OnSeekBar
             yi = x;
             stackpointer = radius;
             for (y = 0; y < h; y++) {
-                pix[yi] = (((-16777216 & pix[yi]) | (dv[rsum] << 16)) | (dv[gsum] << 8)) | dv[bsum];
+                // Preserve alpha channel: ( 0xff000000 & pix[yi] )
+                pix[yi] = (0xff000000 & pix[yi]) | (dv[rsum] << 16) | (dv[gsum] << 8) | dv[bsum];
+
                 rsum -= routsum;
                 gsum -= goutsum;
                 bsum -= boutsum;
-                sir = stack[((stackpointer - radius) + div) % div];
+
+                stackstart = stackpointer - radius + div;
+                sir = stack[stackstart % div];
+
                 routsum -= sir[0];
                 goutsum -= sir[1];
                 boutsum -= sir[2];
+
                 if (x == 0) {
                     vmin[y] = Math.min(y + r1, hm) * w;
                 }
                 p = x + vmin[y];
+
                 sir[0] = r[p];
                 sir[1] = g[p];
                 sir[2] = b[p];
+
                 rinsum += sir[0];
                 ginsum += sir[1];
                 binsum += sir[2];
+
                 rsum += rinsum;
                 gsum += ginsum;
                 bsum += binsum;
+
                 stackpointer = (stackpointer + 1) % div;
                 sir = stack[stackpointer];
+
                 routsum += sir[0];
                 goutsum += sir[1];
                 boutsum += sir[2];
+
                 rinsum -= sir[0];
                 ginsum -= sir[1];
                 binsum -= sir[2];
+
                 yi += w;
             }
         }
+
         Log.e("pix", w + " " + h + " " + pix.length);
         bitmap.setPixels(pix, 0, w, 0, 0, w, h);
-        return bitmap;
+
+        return (bitmap);
     }
 
     public void onClick(View view) {
@@ -532,14 +455,6 @@ public class BlurActivity extends Activity implements OnClickListener, OnSeekBar
         TouchImageView touchImageView;
         TouchImageView touchImageView2;
         switch (view.getId()) {
-            case R.id.btn_remove_banner /*2131230772*/:
-                if (this.productList.contains("remove_ad")) {
-                    Toast.makeText(this, "You already have this", 1).show();
-                    return;
-                } else {
-                    this.bp.purchase(this.activity, "remove_ad");
-                    return;
-                }
             case R.id.colorBtn /*2131230791*/:
                 this.erase = true;
                 touchImageView = tiv;
@@ -577,11 +492,11 @@ public class BlurActivity extends Activity implements OnClickListener, OnSeekBar
                 selectImage();
                 return;
             case R.id.offsetBtn /*2131230885*/:
-                this.offsetLayout.setVisibility(0);
+                this.offsetLayout.setVisibility(View.VISIBLE);
                 this.offsetBtn.setBackgroundColor(Color.parseColor("#ff3a3a3a"));
                 return;
             case R.id.offsetOk /*2131230888*/:
-                this.offsetLayout.setVisibility(4);
+                this.offsetLayout.setVisibility(View.INVISIBLE);
                 this.offsetBtn.setBackgroundColor(0);
                 return;
             case R.id.resetBtn /*2131230907*/:
@@ -653,9 +568,9 @@ public class BlurActivity extends Activity implements OnClickListener, OnSeekBar
             MediaScannerConnection scanner = new MediaScannerConnection(this, client);
             client.setScanner(scanner);
             scanner.connect();
-            Intent finishWork = new Intent(this, FinishedWork.class);
-            finishWork.putExtra("imageSaveLocation", this.currentPath);
-            startActivity(finishWork);
+//            Intent finishWork = new Intent(this, FinishedWork.class);
+//            finishWork.putExtra("imageSaveLocation", this.currentPath);
+//            startActivity(finishWork);
         }
     }
 
@@ -681,65 +596,6 @@ public class BlurActivity extends Activity implements OnClickListener, OnSeekBar
         alertDialog.show();
     }
 
-    void doYouLoveAppPrompt() {
-        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-        alertDialog.setTitle("Love");
-        alertDialog.setMessage("Do you love this app");
-        alertDialog.setButton(-1, "Yes", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                PreferenceManager.getDefaultSharedPreferences(BlurActivity.this).edit().putString("ColorSplashLove", "yes").commit();
-                BlurActivity.this.ratePrompt();
-            }
-        });
-        alertDialog.setButton(-2, "No", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                LandingActivity.showAdmobInterstitial();
-                BlurActivity.this.finish();
-            }
-        });
-        alertDialog.show();
-    }
-
-    public void ratePrompt() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        final Context context = this;
-        builder.setTitle("WOW!");
-        builder.setMessage("You love this app.Rate me 5 stars.");
-        builder.setPositiveButton("Let's go!", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                PreferenceManager.getDefaultSharedPreferences(context).edit().putString("ColorSplashRate", "yes").commit();
-                try {
-                    BlurActivity.this.startActivity(new Intent("android.intent.action.VIEW", Uri.parse("market://details?id=" + BlurActivity.this.getPackageName())));
-                } catch (ActivityNotFoundException e) {
-                    e.printStackTrace();
-                }
-                dialog.dismiss();
-            }
-        });
-        builder.setNegativeButton("Later", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                LandingActivity.showAdmobInterstitial();
-                BlurActivity.this.finish();
-            }
-        });
-        builder.create().show();
-    }
-
-    public void onBackPressed() {
-        String loveCheck = PreferenceManager.getDefaultSharedPreferences(this).getString("ColorSplashLove", "no");
-        if (PreferenceManager.getDefaultSharedPreferences(this).getString("ColorSplashRate", "no") != "no") {
-            LandingActivity.showAdmobInterstitial();
-            finish();
-        } else if (loveCheck == "no") {
-            doYouLoveAppPrompt();
-        } else {
-            ratePrompt();
-        }
-    }
-
     public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
         switch (seekBar.getId()) {
             case R.id.blurrinessSeekBar /*2131230765*/:
@@ -748,7 +604,8 @@ public class BlurActivity extends Activity implements OnClickListener, OnSeekBar
                 brushView.brushSize.setPaintOpacity(blurrinessBar.getProgress());
                 brushView.invalidate();
                 tiv.opacity = i + 1;
-                this.blurText.setText(blurrinessBar.getProgress() + FirebaseRemoteConfig.DEFAULT_VALUE_FOR_STRING);
+                this.blurText.setText(blurrinessBar.getProgress()
+                        + Constants.DEFAULT_VALUE_FOR_STRING);
                 tiv.updatePaintBrush();
                 return;
             case R.id.offsetBar /*2131230884*/:
@@ -764,7 +621,7 @@ public class BlurActivity extends Activity implements OnClickListener, OnSeekBar
                 brushView.isBrushSize = true;
                 brushView.brushSize.setPaintOpacity(255);
                 brushView.setShapeRadiusRatio(((float) (radiusBar.getProgress() + 50)) / tiv.saveScale);
-                Log.wtf("radious :", radiusBar.getProgress() + FirebaseRemoteConfig.DEFAULT_VALUE_FOR_STRING);
+                Log.wtf("radious :", radiusBar.getProgress() + Constants.DEFAULT_VALUE_FOR_STRING);
                 brushView.invalidate();
                 tiv.radius = ((float) (radiusBar.getProgress() + 50)) / tiv.saveScale;
                 tiv.updatePaintBrush();
@@ -835,9 +692,6 @@ public class BlurActivity extends Activity implements OnClickListener, OnSeekBar
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (!this.bp.handleActivityResult(requestCode, resultCode, data)) {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
         if (resultCode != -1) {
             return;
         }
@@ -859,12 +713,12 @@ public class BlurActivity extends Activity implements OnClickListener, OnSeekBar
     public void onStartTrackingTouch(SeekBar seekBar) {
         switch (seekBar.getId()) {
             case R.id.blurrinessSeekBar /*2131230765*/:
-                this.blurView.setVisibility(0);
+                this.blurView.setVisibility(View.VISIBLE);
                 this.startBlurSeekbarPosition = blurrinessBar.getProgress();
-                this.blurText.setText(this.startBlurSeekbarPosition + FirebaseRemoteConfig.DEFAULT_VALUE_FOR_STRING);
+                this.blurText.setText(this.startBlurSeekbarPosition + Constants.DEFAULT_VALUE_FOR_STRING);
                 return;
             case R.id.offsetBar /*2131230884*/:
-                this.offsetDemo.setVisibility(0);
+                this.offsetDemo.setVisibility(View.VISIBLE);
                 Bitmap bm = Bitmap.createBitmap(300, 300, Config.ARGB_8888).copy(Config.ARGB_8888, true);
                 Canvas offsetCanvas = new Canvas(bm);
                 Paint p = new Paint(1);
@@ -874,7 +728,7 @@ public class BlurActivity extends Activity implements OnClickListener, OnSeekBar
                 this.offsetDemo.setImageBitmap(bm);
                 return;
             case R.id.widthSeekBar /*2131230988*/:
-                brushView.setVisibility(0);
+                brushView.setVisibility(View.VISIBLE);
                 return;
             default:
                 return;
@@ -882,7 +736,7 @@ public class BlurActivity extends Activity implements OnClickListener, OnSeekBar
     }
 
     public void onStopTrackingTouch(SeekBar seekBar) {
-        this.blurView.setVisibility(4);
+        this.blurView.setVisibility(View.INVISIBLE);
         if (seekBar.getId() == R.id.blurrinessSeekBar) {
             AlertDialog alertDialog = new AlertDialog.Builder(this).create();
             alertDialog.setTitle("Warning");
@@ -903,9 +757,9 @@ public class BlurActivity extends Activity implements OnClickListener, OnSeekBar
             });
             alertDialog.show();
         } else if (seekBar.getId() == R.id.offsetBar) {
-            this.offsetDemo.setVisibility(4);
+            this.offsetDemo.setVisibility(View.INVISIBLE);
         } else if (seekBar.getId() == R.id.widthSeekBar) {
-            brushView.setVisibility(4);
+            brushView.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -921,19 +775,7 @@ public class BlurActivity extends Activity implements OnClickListener, OnSeekBar
         return super.onOptionsItemSelected(item);
     }
 
-    void update() {
-        this.productList = this.bp.listOwnedProducts();
-        if (this.productList.contains("remove_ad")) {
-            LandingActivity.noAd = true;
-            this.lv_adview.setVisibility(8);
-            this.lv_xads.setVisibility(8);
-        }
-    }
-
     protected void onResume() {
         super.onResume();
-        if (LandingActivity.noAd && this.lv_adview.getVisibility() == 0) {
-            this.bp.purchase(this.activity, "remove_ad");
-        }
     }
 }

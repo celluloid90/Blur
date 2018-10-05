@@ -4,4 +4,5 @@
     <string name="blur_btn_text">Blur</string>
     <string name="shape_blur_btn_text">Shape Blur</string>
     <string name="tutorial_btn_text">Tutorial</string>
+    <string name="allow">Allow</string>
 </resources>

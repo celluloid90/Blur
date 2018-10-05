@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/mainLayOut"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,75 +10,284 @@
     <LinearLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
-        android:layout_height="UNKNOWN_DATA_0x3201"
+        android:layout_height="wrap_content"
         android:background="#a0191919"
         android:gravity="top|bottom|left|right|center_vertical|fill_vertical|center_horizontal|fill_horizontal|center|fill|start|end"
         android:orientation="horizontal">
 
         <ImageButton
             android:id="@+id/newBtn"
-            android:layout_width="UNKNOWN_DATA_0x3201"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="@drawable/nav_button"
             android:padding="10dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/newimage" />
+            app:srcCompat="@drawable/newimage" />
 
         <ImageButton
             android:id="@+id/resetBtn"
-            android:layout_width="UNKNOWN_DATA_0x3201"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="@drawable/nav_button"
             android:padding="10dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/reset" />
+            app:srcCompat="@drawable/reset" />
 
         <ImageButton
             android:id="@+id/undoBtn"
-            android:layout_width="UNKNOWN_DATA_0x3201"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="@drawable/nav_button"
             android:padding="10dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/undo_selector" />
+            app:srcCompat="@drawable/undo_selector" />
 
         <ImageButton
             android:id="@+id/fitBtn"
-            android:layout_width="UNKNOWN_DATA_0x3201"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="@drawable/nav_button"
             android:padding="10dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/fit" />
+            app:srcCompat="@drawable/fit" />
 
         <ImageButton
             android:id="@+id/shareBtn"
-            android:layout_width="UNKNOWN_DATA_0x3201"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="@drawable/nav_button"
             android:contentDescription="save"
             android:padding="10dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/show_tutorial"
-            android:visibility="gone" />
+            android:visibility="gone"
+            app:srcCompat="@drawable/show_tutorial" />
 
         <ImageButton
             android:id="@+id/offsetBtn"
-            android:layout_width="UNKNOWN_DATA_0x3201"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="@drawable/nav_button"
             android:padding="10dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/offset" />
+            app:srcCompat="@drawable/offset" />
 
         <ImageButton
             android:id="@+id/saveBtn"
-            android:layout_width="UNKNOWN_DATA_0x3201"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="@drawable/nav_button"
             android:contentDescription="save"
             android:padding="10dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/save" />
+            app:srcCompat="@drawable/save" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/imageViewContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="9.0"
+        android:background="#b0434343">
+
+        <developer.mobile.com.blur.TouchImageView
+            android:id="@+id/drawingImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/brush_view_bg_repeat"
+            android:scaleType="matrix" />
+
+        <developer.mobile.com.blur.BrushView
+            android:id="@+id/magnifyingView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:background="@drawable/brush_view_bg_repeat"
+            android:minHeight="100dp"
+            android:minWidth="100dp"
+            android:padding="100dp"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/blur_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/blur_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#d2000000"
+                android:gravity="top|bottom|left|right|center_vertical|fill_vertical|center_horizontal|fill_horizontal|center|fill|start|end"
+                android:padding="8dp"
+                android:textColor="#ffffffff"
+                android:textSize="16dp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/preview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#d2000000"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/offsetLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#ff3a3a3a"
+            android:gravity="top|bottom|left|right|center_vertical|fill_vertical|center_horizontal|fill_horizontal|center|fill|start|end"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="top|bottom|left|right|center_vertical|fill_vertical|center_horizontal|fill_horizontal|center|fill|start|end"
+                android:text="Adjust Brush Offset"
+                android:textColor="@color/white"
+                android:textSize="20dp"
+                android:textStyle="bold" />
+
+            <SeekBar
+                android:id="@+id/offsetBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="3dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:paddingTop="3dp"
+                android:thumb="@drawable/thumb" />
+
+            <Button
+                android:id="@+id/offsetOk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="OK" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/offsetDemo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/bottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|bottom|left|right|center_vertical|fill_vertical|center_horizontal|fill_horizontal|center|fill|start|end"
+        android:background="#b0191919"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left|right|center_horizontal|fill_horizontal|center|fill|start|end"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/widthcontainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="top|bottom|left|right|center_vertical|fill_vertical|center_horizontal|fill_horizontal|center|fill|start|end"
+                android:gravity="top|bottom|left|right|center_vertical|fill_vertical|center_horizontal|fill_horizontal|center|fill|start|end"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/widthText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="top|bottom|center_vertical|fill_vertical|center|fill"
+                    android:layout_weight="2.0"
+                    android:gravity="top|bottom|left|right|center_vertical|fill_vertical|center_horizontal|fill_horizontal|center|fill|start|end"
+                    android:paddingLeft="10dp"
+                    android:text="Brush Size"
+                    android:textColor="#ffffffff" />
+
+                <SeekBar
+                    android:id="@+id/widthSeekBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="5.0"
+                    android:maxHeight="2dp"
+                    android:minHeight="2dp"
+                    android:paddingBottom="13dp"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:paddingTop="13dp"
+                    android:thumb="@drawable/thumb" />
+
+                <TextView
+                    android:id="@+id/opacityText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="top|bottom|center_vertical|fill_vertical|center|fill"
+                    android:layout_weight="3.0"
+                    android:gravity="top|bottom|left|right|center_vertical|fill_vertical|center_horizontal|fill_horizontal|center|fill|start|end"
+                    android:paddingLeft="5dp"
+                    android:text="Blurriness"
+                    android:textColor="#ffffffff" />
+
+                <SeekBar
+                    android:id="@+id/blurrinessSeekBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="5.0"
+                    android:maxHeight="2dp"
+                    android:minHeight="2dp"
+                    android:paddingBottom="13dp"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:paddingTop="13dp"
+                    android:thumb="@drawable/thumb" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/bottomBar1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|bottom|left|right|center_vertical|fill_vertical|center_horizontal|fill_horizontal|center|fill|start|end"
+        android:background="#a0191919"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/colorBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1.0"
+            android:background="#ff3a3a3a"
+            android:padding="5dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/erase" />
+
+        <ImageButton
+            android:id="@+id/grayBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1.0"
+            android:padding="5dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/brush" />
+
+        <ImageButton
+            android:id="@+id/zoomBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="left|right|center_horizontal|fill_horizontal|center|fill|start|end"
+            android:layout_weight="1.0"
+            android:padding="5dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/pan" />
     </LinearLayout>
 </LinearLayout>
